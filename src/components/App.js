@@ -5,6 +5,8 @@ import Storage from '../services/Storage.js';
 import BoardView from './BoardView.js';
 import MenuOverlay from './MenuOverlay.js';
 import ModalInput from './ModalInput.js';
+import TaskEditModal from './TaskEditModal.js';
+import TaskDetailModal from './TaskDetailModal.js';
 import BoardSwitcher from './BoardSwitcher.js';
 
 export default function App() {
@@ -41,6 +43,8 @@ export default function App() {
       dispatch({ type: 'REQUEST_DELETE', deleteType: 'column' });
     } else if (input.toUpperCase() === 'E') {
       dispatch({ type: 'OPEN_MODAL', mode: 'modal_edit_column' });
+    } else if (input.toUpperCase() === 'V') {
+      dispatch({ type: 'OPEN_MODAL', mode: 'task_detail' });
     } else if (input.toUpperCase() === 'S') {
       dispatch({ type: 'SELECT_TASK' });
     } else if (input.toUpperCase() === 'Q') {
@@ -55,6 +59,8 @@ export default function App() {
       dispatch({ type: 'MOVE_TASK', direction: 'left' });
     } else if (key.rightArrow) {
       dispatch({ type: 'MOVE_TASK', direction: 'right' });
+    } else if (input.toUpperCase() === 'V') {
+      dispatch({ type: 'OPEN_MODAL', mode: 'task_detail' });
     } else if (input.toUpperCase() === 'D') {
       dispatch({ type: 'REQUEST_DELETE', deleteType: 'task' });
     } else if (input.toUpperCase() === 'E') {
@@ -88,9 +94,9 @@ export default function App() {
   if (!activeBoardId) {
     statusText = 'No board. Press M to open menu.';
   } else if (selectedTaskId) {
-    statusText = '← → Move task | E Edit | D Delete | S Deselect';
+    statusText = '← → Move | V Detail | E Edit | D Delete | S Deselect';
   } else {
-    statusText = '← → ↑ ↓ Navigate | S Select | E Edit | D Del Column | M Menu | Q Quit';
+    statusText = '← → ↑ ↓ Navigate | S Select | V Detail | E Edit | D Del Column | M Menu | Q Quit';
   }
 
   // Compute confirm delete message
@@ -107,6 +113,16 @@ export default function App() {
     }
   }
 
+  // Resolve focused task (for detail view without selection)
+  const focusedCol = boardColumns[focusedColumnIndex];
+  const focusedColTasks = focusedCol
+    ? boardTasks.filter(t => t.columnId === focusedCol.id)
+    : [];
+  const focusedTask = focusedColTasks[focusedTaskIndex] || null;
+  const detailTask = selectedTaskId
+    ? tasks.find(t => t.id === selectedTaskId)
+    : focusedTask;
+
   // Compute initialValue for edit modals
   let modalInitialValue = '';
   if (uiMode === 'modal_edit_board' && activeBoard) {
@@ -114,9 +130,18 @@ export default function App() {
   } else if (uiMode === 'modal_edit_column') {
     const col = boardColumns[focusedColumnIndex];
     modalInitialValue = col ? col.name : '';
-  } else if (uiMode === 'modal_edit_task' && selectedTaskId) {
+  }
+
+  // Compute initial values for task edit modal
+  const isTaskModal = uiMode === 'modal_task' || uiMode === 'modal_edit_task';
+  let taskInitialTitle = '';
+  let taskInitialDescription = '';
+  if (uiMode === 'modal_edit_task' && selectedTaskId) {
     const task = tasks.find(t => t.id === selectedTaskId);
-    modalInitialValue = task ? task.title : '';
+    if (task) {
+      taskInitialTitle = task.title;
+      taskInitialDescription = task.description || '';
+    }
   }
 
   return (
@@ -169,14 +194,37 @@ export default function App() {
         </Box>
       )}
 
-      {uiMode.startsWith('modal_') && (
+      {isTaskModal && (
+        <Box position="absolute" flexDirection="column" justifyContent="center" alignItems="center" width="100%" height="100%">
+          <TaskEditModal
+            key={uiMode}
+            mode={uiMode}
+            dispatch={dispatch}
+            isActive={isTaskModal}
+            initialTitle={taskInitialTitle}
+            initialDescription={taskInitialDescription}
+          />
+        </Box>
+      )}
+
+      {uiMode.startsWith('modal_') && !isTaskModal && (
         <Box position="absolute" flexDirection="column" justifyContent="center" alignItems="center" width="100%" height="100%">
           <ModalInput
             key={uiMode}
             mode={uiMode}
             dispatch={dispatch}
-            isActive={uiMode.startsWith('modal_')}
+            isActive={uiMode.startsWith('modal_') && !isTaskModal}
             initialValue={modalInitialValue}
+          />
+        </Box>
+      )}
+
+      {uiMode === 'task_detail' && detailTask && (
+        <Box position="absolute" flexDirection="column" justifyContent="center" alignItems="center" width="100%" height="100%">
+          <TaskDetailModal
+            task={detailTask}
+            dispatch={dispatch}
+            isActive={uiMode === 'task_detail'}
           />
         </Box>
       )}

@@ -5,19 +5,15 @@ import TextInput from 'ink-text-input';
 const LABELS = {
   modal_board: 'New Board name',
   modal_column: 'New Column name',
-  modal_task: 'New Task title',
   modal_edit_board: 'Edit Board name',
   modal_edit_column: 'Edit Column name',
-  modal_edit_task: 'Edit Task title',
 };
 
 const PAYLOADS = {
   modal_board: (val) => ({ type: 'CREATE_BOARD', name: val }),
   modal_column: (val) => ({ type: 'CREATE_COLUMN', name: val }),
-  modal_task: (val) => ({ type: 'CREATE_TASK', title: val }),
   modal_edit_board: (val) => ({ type: 'EDIT_BOARD', name: val }),
   modal_edit_column: (val) => ({ type: 'EDIT_COLUMN', name: val }),
-  modal_edit_task: (val) => ({ type: 'EDIT_TASK', title: val }),
 };
 
 export default function ModalInput({ mode, dispatch, isActive, initialValue }) {

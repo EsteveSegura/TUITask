@@ -55,7 +55,7 @@ function reducer(state, action) {
         c => c.boardId === activeBoardId && c.isInitial
       );
       if (!initialCol) return base;
-      const task = new Task(action.title, activeBoardId, initialCol.id);
+      const task = new Task(action.title, activeBoardId, initialCol.id, action.description || '');
       return {
         ...base,
         tasks: [...base.tasks, task],
@@ -143,7 +143,7 @@ function reducer(state, action) {
       const targetCol = boardCols[targetColIdx];
       const updatedTasks = tasks.map(t => {
         if (t.id === selectedTaskId) {
-          const clone = Task.fromJSON(t.toJSON());
+          const clone = Task.fromJSON({ ...t.toJSON(), updatedAt: new Date().toISOString() });
           clone.moveTo(targetCol.id);
           return clone;
         }
@@ -313,7 +313,12 @@ function reducer(state, action) {
         ...base,
         tasks: base.tasks.map(t =>
           t.id === selectedTaskId
-            ? Task.fromJSON({ ...t.toJSON(), title: action.title })
+            ? Task.fromJSON({
+                ...t.toJSON(),
+                title: action.title,
+                description: action.description !== undefined ? action.description : t.description,
+                updatedAt: new Date().toISOString(),
+              })
             : t
         ),
         selectedTaskId: null,
