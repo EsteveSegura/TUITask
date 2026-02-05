@@ -1,5 +1,7 @@
 # TUITask
 
+<video src="docs/demo.mp4" autoplay loop muted playsinline></video>
+
 A terminal-based Kanban board.
 
 Manage multiple boards, columns, and tasks entirely from your terminal. Data persists in `~/.tuitask/data.json`.
