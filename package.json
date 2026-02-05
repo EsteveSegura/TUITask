@@ -1,0 +1,21 @@
+{
+  "name": "tuitask",
+  "version": "1.0.0",
+  "description": "TUI Kanban Board",
+  "type": "module",
+  "main": "cli.js",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "start": "npm run build && node cli.js"
+  },
+  "dependencies": {
+    "ink": "^4.4.1",
+    "ink-text-input": "^5.0.1",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.24.0",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-react": "^7.24.0"
+  }
+}
