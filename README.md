@@ -1,6 +1,6 @@
 # TUITask
 
-<video src="docs/demo.mp4" autoplay loop muted playsinline></video>
+[![Watch the demo](https://raw.githubusercontent.com/estevesegura/TUITask/main/docs/demo.png)](https://raw.githubusercontent.com/estevesegura/TUITask/main/docs/demo.mp4)
 
 A terminal-based Kanban board.
 
